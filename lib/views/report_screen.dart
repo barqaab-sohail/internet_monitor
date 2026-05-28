@@ -8,13 +8,10 @@ class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key});
 
   @override
-  State<ReportScreen> createState() =>
-      _ReportScreenState();
+  State<ReportScreen> createState() => _ReportScreenState();
 }
 
-class _ReportScreenState
-    extends State<ReportScreen> {
-
+class _ReportScreenState extends State<ReportScreen> {
   List<LogModel> logs = [];
 
   @override
@@ -31,48 +28,33 @@ class _ReportScreenState
   }
 
   Future clearLogs() async {
-
     bool? confirm = await Get.dialog(
       AlertDialog(
-        title: const Text(
-          "Clear Logs",
-        ),
+        title: const Text("Clear Logs"),
 
-        content: const Text(
-          "Are you sure you want to delete all logs?",
-        ),
+        content: const Text("Are you sure you want to delete all logs?"),
 
         actions: [
-
           TextButton(
             onPressed: () {
-              Get.back(
-                result: false,
-              );
+              Get.back(result: false);
             },
 
-            child: const Text(
-              "Cancel",
-            ),
+            child: const Text("Cancel"),
           ),
 
           ElevatedButton(
             onPressed: () {
-              Get.back(
-                result: true,
-              );
+              Get.back(result: true);
             },
 
-            child: const Text(
-              "Clear",
-            ),
+            child: const Text("Clear"),
           ),
         ],
       ),
     );
 
     if (confirm == true) {
-
       await StorageService.clearLogs();
 
       loadLogs();
@@ -80,8 +62,7 @@ class _ReportScreenState
       Get.snackbar(
         "Success",
         "All logs cleared",
-        snackPosition:
-            SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.BOTTOM,
       );
     }
   }
@@ -89,63 +70,41 @@ class _ReportScreenState
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:
-          const EdgeInsets.all(25),
+      padding: const EdgeInsets.all(25),
 
       child: Container(
-        padding:
-            const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
 
         decoration: BoxDecoration(
           color: Colors.white,
 
-          borderRadius:
-              BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(20),
         ),
 
         child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
 
           children: [
-
             // HEADER
-
             Row(
-              mainAxisAlignment:
-                  MainAxisAlignment
-                      .spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
               children: [
-
                 const Text(
                   "Internet Reports",
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight:
-                        FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 ),
 
                 ElevatedButton.icon(
-                  style:
-                      ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Colors.red,
-                  ),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
 
                   onPressed: clearLogs,
 
-                  icon: const Icon(
-                    Icons.delete,
-                    color: Colors.white,
-                  ),
+                  icon: const Icon(Icons.delete, color: Colors.white),
 
                   label: const Text(
                     "Clear Logs",
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               ],
@@ -154,31 +113,22 @@ class _ReportScreenState
             const SizedBox(height: 20),
 
             // TABLE HEADER
-
             Container(
-              padding:
-                  const EdgeInsets.all(15),
+              padding: const EdgeInsets.all(15),
 
               decoration: BoxDecoration(
-                color:
-                    Colors.grey.shade100,
+                color: Colors.grey.shade100,
 
-                borderRadius:
-                    BorderRadius.circular(
-                        10),
+                borderRadius: BorderRadius.circular(10),
               ),
 
               child: const Row(
                 children: [
-
                   Expanded(
                     flex: 2,
                     child: Text(
                       "Time",
-                      style: TextStyle(
-                        fontWeight:
-                            FontWeight.bold,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
 
@@ -186,10 +136,7 @@ class _ReportScreenState
                     flex: 2,
                     child: Text(
                       "Gateway",
-                      style: TextStyle(
-                        fontWeight:
-                            FontWeight.bold,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
 
@@ -197,30 +144,21 @@ class _ReportScreenState
                     flex: 2,
                     child: Text(
                       "IP Address",
-                      style: TextStyle(
-                        fontWeight:
-                            FontWeight.bold,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
 
                   Expanded(
                     child: Text(
                       "Status",
-                      style: TextStyle(
-                        fontWeight:
-                            FontWeight.bold,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
 
                   Expanded(
                     child: Text(
                       "Duration",
-                      style: TextStyle(
-                        fontWeight:
-                            FontWeight.bold,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
@@ -230,105 +168,59 @@ class _ReportScreenState
             const SizedBox(height: 10),
 
             // LOGS
-
             Expanded(
               child: logs.isEmpty
                   ? const Center(
                       child: Text(
                         "No logs found",
-                        style: TextStyle(
-                          fontSize: 18,
-                          color:
-                              Colors.black54,
-                        ),
+                        style: TextStyle(fontSize: 18, color: Colors.black54),
                       ),
                     )
-
                   : ListView.builder(
-                      itemCount:
-                          logs.length,
+                      itemCount: logs.length,
 
-                      itemBuilder:
-                          (_, index) {
-
-                        final log =
-                            logs[index];
+                      itemBuilder: (_, index) {
+                        final log = logs[index];
 
                         return Container(
-                          margin:
-                              const EdgeInsets
-                                  .only(
-                            bottom: 10,
-                          ),
+                          margin: const EdgeInsets.only(bottom: 10),
 
-                          padding:
-                              const EdgeInsets
-                                  .all(15),
+                          padding: const EdgeInsets.all(15),
 
-                          decoration:
-                              BoxDecoration(
-                            borderRadius:
-                                BorderRadius
-                                    .circular(
-                                        10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
 
-                            border:
-                                Border.all(
-                              color: Colors
-                                  .black12,
-                            ),
+                            border: Border.all(color: Colors.black12),
                           ),
 
                           child: Row(
                             children: [
-
                               Expanded(
                                 flex: 2,
-                                child: Text(
-                                  log.datetime
-                                      .toString(),
-                                ),
+                                child: Text(log.datetime.toString()),
                               ),
 
-                              Expanded(
-                                flex: 2,
-                                child: Text(
-                                  log.gatewayName,
-                                ),
-                              ),
+                              Expanded(flex: 2, child: Text(log.gatewayName)),
 
-                              Expanded(
-                                flex: 2,
-                                child: Text(
-                                  log.gatewayIp,
-                                ),
-                              ),
+                              Expanded(flex: 2, child: Text(log.gatewayIp)),
 
                               Expanded(
                                 child: Text(
                                   log.status,
 
-                                  style:
-                                      TextStyle(
-                                    color: log
-                                                .status ==
-                                            "DOWN"
-                                        ? Colors
-                                            .red
-                                        : Colors
-                                            .green,
+                                  style: TextStyle(
+                                    color: log.status == "DOWN"
+                                        ? Colors.red
+                                        : Colors.green,
 
-                                    fontWeight:
-                                        FontWeight
-                                            .bold,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
 
                               Expanded(
                                 child: Text(
-                                  log.durationMinutes >
-                                          0
+                                  log.durationMinutes > 0
                                       ? "${log.durationMinutes} min"
                                       : "-",
                                 ),
