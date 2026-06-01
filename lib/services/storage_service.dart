@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path/path.dart' as path;
 
 import '../models/gateway_model.dart';
+import '../models/gateway_report.dart';
 import '../models/log_model.dart';
 
 class StorageService {
@@ -34,6 +35,34 @@ class StorageService {
     await Hive.openBox(gatewayBox);
     await Hive.openBox(logBox);
     print('Boxes opened successfully');
+  }
+
+  static List<GatewayReport> generateReports() {
+    final logs = loadLogs();
+
+    Map<String, GatewayReport> reports = {};
+
+    for (var log in logs) {
+      reports.putIfAbsent(
+        log.gatewayIp,
+        () => GatewayReport(
+          gatewayName: log.gatewayName,
+          gatewayIp: log.gatewayIp,
+          downCount: 0,
+          totalDowntime: 0,
+        ),
+      );
+
+      if (log.status == "DOWN") {
+        reports[log.gatewayIp]!.downCount++;
+      }
+
+      if (log.status == "UP") {
+        reports[log.gatewayIp]!.totalDowntime += log.durationMinutes;
+      }
+    }
+
+    return reports.values.toList();
   }
 
   // Rest of your methods remain exactly the same...

@@ -6,9 +6,10 @@ import '../controllers/navigation_controller.dart';
 
 import 'add_gateway_dialog.dart';
 import 'gateway_screen.dart';
-import 'report_screen.dart';
+import '../views/report_screen.dart';
 import 'log_screen.dart';
 import 'settings_screen.dart';
+import '../services/storage_service.dart';
 
 class DashboardScreen extends StatelessWidget {
   DashboardScreen({super.key});
@@ -16,6 +17,8 @@ class DashboardScreen extends StatelessWidget {
   final GatewayController controller = Get.put(GatewayController());
 
   final NavigationController navController = Get.put(NavigationController());
+
+  List get reports => StorageService.generateReports();
 
   @override
   Widget build(BuildContext context) {
@@ -273,42 +276,77 @@ class DashboardScreen extends StatelessWidget {
 
           // SUMMARY CARDS
           Obx(() {
-            return Row(
+            final totalOutages = reports.fold(
+              0,
+              (sum, r) => sum + (r.downCount as int),
+            );
+
+            final totalDowntime = reports.fold(
+              0,
+              (sum, r) => sum + (r.totalDowntime as int),
+            );
+
+            return Wrap(
+              spacing: 15,
+              runSpacing: 15,
+
               children: [
-                _summaryCard(
-                  "Total Gateways",
-                  controller.gateways.length.toString(),
-                  Icons.router,
-                  Colors.green,
+                SizedBox(
+                  width: 220,
+                  child: _statCard(
+                    "Total Outages",
+                    totalOutages.toString(),
+                    Colors.red,
+                  ),
                 ),
 
-                const SizedBox(width: 20),
-
-                _summaryCard(
-                  "Online",
-                  controller.gateways
-                      .where((e) => e.isOnline)
-                      .length
-                      .toString(),
-                  Icons.check_circle,
-                  Colors.green,
+                SizedBox(
+                  width: 220,
+                  child: _statCard(
+                    "Total Downtime",
+                    "$totalDowntime min",
+                    Colors.orange,
+                  ),
                 ),
 
-                const SizedBox(width: 20),
+                SizedBox(
+                  width: 220,
+                  child: _summaryCard(
+                    "Total Gateways",
+                    controller.gateways.length.toString(),
+                    Icons.router,
+                    Colors.green,
+                  ),
+                ),
 
-                _summaryCard(
-                  "Offline",
-                  controller.gateways
-                      .where((e) => !e.isOnline)
-                      .length
-                      .toString(),
-                  Icons.cancel,
-                  Colors.red,
+                SizedBox(
+                  width: 220,
+                  child: _summaryCard(
+                    "Online",
+                    controller.gateways
+                        .where((e) => e.isOnline)
+                        .length
+                        .toString(),
+                    Icons.check_circle,
+                    Colors.green,
+                  ),
+                ),
+
+                SizedBox(
+                  width: 220,
+                  child: _summaryCard(
+                    "Offline",
+                    controller.gateways
+                        .where((e) => !e.isOnline)
+                        .length
+                        .toString(),
+                    Icons.cancel,
+                    Colors.red,
+                  ),
                 ),
               ],
             );
           }),
-
           const SizedBox(height: 25),
 
           // GATEWAYS TABLE
@@ -487,47 +525,73 @@ class DashboardScreen extends StatelessWidget {
   // =========================
 
   Widget _summaryCard(String title, String value, IconData icon, Color color) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(20),
+    return Container(
+      padding: const EdgeInsets.all(20),
 
-        decoration: BoxDecoration(
-          color: Colors.white,
+      decoration: BoxDecoration(
+        color: Colors.white,
 
-          borderRadius: BorderRadius.circular(20),
-        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
 
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 28,
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 28,
 
-              backgroundColor: color.withValues(alpha: 0.1),
+            backgroundColor: color.withValues(alpha: 0.1),
 
-              child: Icon(icon, color: color, size: 30),
-            ),
+            child: Icon(icon, color: color, size: 30),
+          ),
 
-            const SizedBox(width: 15),
+          const SizedBox(width: 15),
 
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
 
-              children: [
-                Text(title, style: const TextStyle(color: Colors.black54)),
+            children: [
+              Text(title, style: const TextStyle(color: Colors.black54)),
 
-                const SizedBox(height: 5),
+              const SizedBox(height: 5),
 
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _statCard(String title, String value, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(15),
+
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+
+      child: Column(
+        children: [
+          Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+
+          const SizedBox(height: 10),
+
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 24,
+              color: color,
+              fontWeight: FontWeight.bold,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:internet_monitor/models/gateway_report.dart';
 
 import '../models/log_model.dart';
 import '../services/storage_service.dart';
@@ -10,6 +11,8 @@ class ReportScreen extends StatefulWidget {
   @override
   State<ReportScreen> createState() => _ReportScreenState();
 }
+
+List<GatewayReport> reports = [];
 
 class _ReportScreenState extends State<ReportScreen> {
   List<LogModel> logs = [];
@@ -23,6 +26,8 @@ class _ReportScreenState extends State<ReportScreen> {
 
   void loadLogs() {
     logs = StorageService.loadLogs();
+
+    reports = StorageService.generateReports();
 
     setState(() {});
   }
@@ -111,7 +116,59 @@ class _ReportScreenState extends State<ReportScreen> {
             ),
 
             const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(15),
 
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(10),
+              ),
+
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+
+                children: [
+                  const Text(
+                    "Summary",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  DataTable(
+                    columns: const [
+                      DataColumn(label: Text("Gateway")),
+
+                      DataColumn(label: Text("Down Count")),
+
+                      DataColumn(label: Text("Total Downtime")),
+
+                      DataColumn(label: Text("Avg Downtime")),
+                    ],
+
+                    rows: reports.map((report) {
+                      final avg = report.downCount == 0
+                          ? 0
+                          : report.totalDowntime / report.downCount;
+
+                      return DataRow(
+                        cells: [
+                          DataCell(Text(report.gatewayName)),
+
+                          DataCell(Text(report.downCount.toString())),
+
+                          DataCell(Text("${report.totalDowntime} min")),
+
+                          DataCell(Text("${avg.toStringAsFixed(1)} min")),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
             // TABLE HEADER
             Container(
               padding: const EdgeInsets.all(15),
